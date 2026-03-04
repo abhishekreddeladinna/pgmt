@@ -144,51 +144,73 @@ function MealTracker({ user }: MealTrackerProps) {
     lunch: '🍽️',
     dinner: '🌙',
   };
+  
+  const mealColors: { [key: string]: string } = {
+    breakfast: '#faad14', // Yellow
+    lunch: '#f5222d',     // Red
+    dinner: '#1890ff',    // Blue
+  };
 
   return (
     <div>
-      <Card title="Today's Meal Preferences">
-        <Row gutter={16}>
+      <Card title="Today's Meal Preferences" style={{ marginBottom: '20px' }}>
+        <Row gutter={[16, 16]}>
           {mealTypes.map((type) => (
             <Col xs={24} sm={12} md={8} key={type}>
               <Card
                 style={{
-                  background: meals[type]?.is_eating ? '#f6ffed' : '#fafafa',
-                  border: `2px solid ${meals[type]?.is_eating ? '#52c41a' : '#d9d9d9'}`,
+                  background: meals[type]?.is_eating 
+                    ? `${mealColors[type]}15` 
+                    : '#fafafa',
+                  border: `2px solid ${mealColors[type]}`,
                   borderRadius: '8px',
+                  transition: 'all 0.3s ease',
                 }}
+                hoverable
               >
-                <div style={{ fontSize: '32px', marginBottom: '10px' }}>
+                <div style={{ fontSize: '36px', marginBottom: '10px', textAlign: 'center' }}>
                   {mealIcons[type]}
                 </div>
-                <h3 style={{ marginBottom: '15px', textTransform: 'capitalize' }}>
+                <h3 style={{ 
+                  marginBottom: '15px', 
+                  textTransform: 'capitalize',
+                  textAlign: 'center',
+                  color: mealColors[type],
+                  fontWeight: 'bold'
+                }}>
                   {type}
                 </h3>
 
                 <div style={{ marginBottom: '15px' }}>
-                  <label>Eating: </label>
+                  <label style={{ fontWeight: 'bold' }}>Eating: </label>
                   <Switch
                     checked={meals[type]?.is_eating || false}
                     onChange={(checked) => handleMealChange(type, checked)}
                     disabled={isToggleDisabled(type)}
                     loading={loading}
+                    style={{ marginLeft: '8px' }}
                   />
                   {isToggleDisabled(type) && (
-                    <span style={{ color: '#f5222d', fontSize: '12px', marginLeft: '10px' }}>
-                      Deadline passed
+                    <span style={{ color: '#f5222d', fontSize: '12px', marginLeft: '10px', display: 'block', marginTop: '4px' }}>
+                      ⏱️ Deadline passed
                     </span>
                   )}
                 </div>
 
                 {meals[type]?.is_eating && (
-                  <div>
-                    <label>Type: </label>
+                  <div style={{ 
+                    backgroundColor: 'rgba(255,255,255,0.5)', 
+                    padding: '10px',
+                    borderRadius: '4px',
+                    marginTop: '10px'
+                  }}>
+                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Type: </label>
                     <Select
                       value={meals[type]?.veg_non_veg || 'veg'}
                       onChange={(value) => handleVegNonVegChange(type, value)}
                       options={[
-                        { label: 'Vegetarian', value: 'veg' },
-                        { label: 'Non-Vegetarian', value: 'non_veg' },
+                        { label: '🥬 Vegetarian', value: 'veg' },
+                        { label: '🍗 Non-Vegetarian', value: 'non_veg' },
                       ]}
                       style={{ width: '100%' }}
                     />
@@ -200,14 +222,31 @@ function MealTracker({ user }: MealTrackerProps) {
         </Row>
       </Card>
 
-      <div style={{ marginTop: '20px', padding: '15px', background: '#e6f7ff', borderRadius: '4px' }}>
-        <strong>⏰ Deadlines:</strong>
-        <ul style={{ marginTop: '10px', marginBottom: 0 }}>
-          <li>Breakfast: Until {getDeadlineLabel('breakfast') || '9:00 AM'}</li>
-          <li>Lunch: Until {getDeadlineLabel('lunch') || '9:00 AM'}</li>
-          <li>Dinner: Until {getDeadlineLabel('dinner') || '7:00 PM'}</li>
-        </ul>
-      </div>
+      <Card title="⏰ Meal Deadlines" style={{ marginTop: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }} headStyle={{ color: 'white' }}>
+        <Row gutter={[16, 16]}>
+          {mealTypes.map((type) => (
+            <Col xs={24} sm={12} md={8} key={type}>
+              <div style={{
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                padding: '12px',
+                borderRadius: '6px',
+                textAlign: 'center',
+                backdropFilter: 'blur(10px)'
+              }}>
+                <div style={{ fontSize: '24px', marginBottom: '8px' }}>
+                  {mealIcons[type]}
+                </div>
+                <strong style={{ display: 'block', textTransform: 'capitalize', marginBottom: '4px' }}>
+                  {type}
+                </strong>
+                <div style={{ fontSize: '14px' }}>
+                  Until {getDeadlineLabel(type) || (type === 'breakfast' ? '9:00 AM' : type === 'lunch' ? '9:00 AM' : '7:00 PM')}
+                </div>
+              </div>
+            </Col>
+          ))}
+        </Row>
+      </Card>
     </div>
   );
 }

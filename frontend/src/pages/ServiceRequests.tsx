@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Table, Tag, message, Empty } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, Table, Tag, message, Empty, Row, Col, Badge, useBreakpoint } from 'antd';
+import { PlusOutlined, CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import type { FormInstance } from 'antd';
 
@@ -75,12 +75,15 @@ function ServiceRequests({ user }: ServiceRequestsProps) {
       title: 'Issue',
       dataIndex: 'issue',
       key: 'issue',
-      width: '60%',
+      width: '50%',
+      responsive: ['md'] as const,
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: '25%',
+      responsive: ['sm'] as const,
       render: (status: string) => (
         <Tag color={status === 'Fixed' ? 'green' : 'orange'}>
           {status}
@@ -91,12 +94,14 @@ function ServiceRequests({ user }: ServiceRequestsProps) {
       title: 'Date',
       dataIndex: 'created_at',
       key: 'created_at',
+      width: '25%',
+      responsive: ['md'] as const,
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
   ];
 
   return (
-    <div>
+    <div style={{ padding: '16px 0' }}>
       <Card title="Create Service Request" style={{ marginBottom: '20px' }}>
         <Form
           form={form}
@@ -133,12 +138,36 @@ function ServiceRequests({ user }: ServiceRequestsProps) {
 
       <Card title="Your Service Requests">
         {requests.length > 0 ? (
-          <Table
-            dataSource={requests}
-            columns={columns}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
+          <>
+            {/* Mobile view - Card layout */}
+            <div style={{ display: 'none' }}>
+              {requests.map((request) => (
+                <Card
+                  key={request.id}
+                  size="small"
+                  style={{ marginBottom: '12px' }}
+                  extra={
+                    <Tag color={request.status === 'Fixed' ? 'green' : 'orange'}>
+                      {request.status}
+                    </Tag>
+                  }
+                >
+                  <p><strong>Issue:</strong> {request.issue}</p>
+                  <p><strong>Date:</strong> {new Date(request.created_at).toLocaleDateString()}</p>
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop view - Table layout */}
+            <Table
+              dataSource={requests}
+              columns={columns}
+              rowKey="id"
+              pagination={{ pageSize: 5 }}
+              scroll={{ x: 'max-content' }}
+              size="middle"
+            />
+          </>
         ) : (
           <Empty description="No service requests yet" />
         )}
