@@ -1,0 +1,13 @@
+{
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "env": {
+    "VITE_API_URL": "https://pgmt-api.onrender.com"
+  },
+  "routes": [
+    {
+      "src": "/(?!.*\\.)",
+      "dest": "/index.html"
+    }
+  ]
+}
