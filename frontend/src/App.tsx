@@ -42,7 +42,7 @@ function AppContent() {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
-    } else if (location.pathname !== '/login' && location.pathname !== '/signup') {
+    } else if (location.hash.slice(1) !== '/login' && location.hash.slice(1) !== '/signup') {
       navigate('/login');
     }
   }, [navigate, location]);
@@ -88,7 +88,8 @@ function AppContent() {
     navigate(key);
   };
 
-  if (!user || location.pathname === '/login' || location.pathname === '/signup') {
+  const currentHash = location.hash.slice(1) || '/';
+  if (!user || currentHash === '/login' || currentHash === '/signup') {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -170,7 +171,7 @@ function AppContent() {
       }}>
         <Menu
           mode="horizontal"
-          selectedKeys={[location.pathname]}
+          selectedKeys={[currentHash]}
           onClick={(e) => handleMenuClick(e.key)}
           items={menuItems.map(item => ({
             key: item.key,
