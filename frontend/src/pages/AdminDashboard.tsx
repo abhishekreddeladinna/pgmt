@@ -352,25 +352,55 @@ function AdminDashboard({ user }: AdminDashboardProps) {
             label: 'Food Inventory',
             children: (
               <Card>
-                <Row gutter={16}>
-                  <Col xs={24} sm={12}>
-                    <Card style={{ background: '#f6ffed', borderLeft: '4px solid #52c41a' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '10px' }}>🥬</div>
-                      <h3>Vegetarian Meals</h3>
-                      <p style={{ fontSize: '24px', color: '#52c41a', fontWeight: 'bold' }}>
-                        {mealSummary?.veg || 0}
+                <Row gutter={[16, 16]}>
+                  <Col xs={24} sm={12} md={8}>
+                    <Card style={{ background: '#faad1415', border: '2px solid #faad14', textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>☀️</div>
+                      <h3 style={{ color: '#faad14', marginBottom: '8px' }}>Breakfast</h3>
+                      <p style={{ fontSize: '28px', color: '#faad14', fontWeight: 'bold', marginBottom: '8px' }}>
+                        {mealSummary?.breakfast || 0}
                       </p>
-                      <p style={{ color: '#666' }}>Portions needed today</p>
+                      <p style={{ color: '#666', margin: 0, fontSize: '12px' }}>Portions needed</p>
                     </Card>
                   </Col>
-                  <Col xs={24} sm={12}>
-                    <Card style={{ background: '#fff1f0', borderLeft: '4px solid #f5222d' }}>
-                      <div style={{ fontSize: '32px', marginBottom: '10px' }}>🍖</div>
-                      <h3>Non-Vegetarian Meals</h3>
-                      <p style={{ fontSize: '24px', color: '#f5222d', fontWeight: 'bold' }}>
+                  <Col xs={24} sm={12} md={8}>
+                    <Card style={{ background: '#f522220d', border: '2px solid #f5222d', textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>🍽️</div>
+                      <h3 style={{ color: '#f5222d', marginBottom: '8px' }}>Lunch</h3>
+                      <p style={{ fontSize: '28px', color: '#f5222d', fontWeight: 'bold', marginBottom: '8px' }}>
+                        {mealSummary?.lunch || 0}
+                      </p>
+                      <p style={{ color: '#666', margin: 0, fontSize: '12px' }}>Portions needed</p>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={8}>
+                    <Card style={{ background: '#1890ff15', border: '2px solid #1890ff', textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>🌙</div>
+                      <h3 style={{ color: '#1890ff', marginBottom: '8px' }}>Dinner</h3>
+                      <p style={{ fontSize: '28px', color: '#1890ff', fontWeight: 'bold', marginBottom: '8px' }}>
+                        {mealSummary?.dinner || 0}
+                      </p>
+                      <p style={{ color: '#666', margin: 0, fontSize: '12px' }}>Portions needed</p>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={8}>
+                    <Card style={{ background: '#52c41a15', border: '2px solid #52c41a', textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>🥬</div>
+                      <h3 style={{ color: '#52c41a', marginBottom: '8px' }}>Vegetarian</h3>
+                      <p style={{ fontSize: '28px', color: '#52c41a', fontWeight: 'bold', marginBottom: '8px' }}>
+                        {mealSummary?.veg || 0}
+                      </p>
+                      <p style={{ color: '#666', margin: 0, fontSize: '12px' }}>Portions needed</p>
+                    </Card>
+                  </Col>
+                  <Col xs={24} sm={12} md={8}>
+                    <Card style={{ background: '#ff7a4515', border: '2px solid #ff7a45', textAlign: 'center', padding: '20px' }}>
+                      <div style={{ fontSize: '36px', marginBottom: '10px' }}>🍗</div>
+                      <h3 style={{ color: '#ff7a45', marginBottom: '8px' }}>Non-Veg</h3>
+                      <p style={{ fontSize: '28px', color: '#ff7a45', fontWeight: 'bold', marginBottom: '8px' }}>
                         {mealSummary?.non_veg || 0}
                       </p>
-                      <p style={{ color: '#666' }}>Portions needed today</p>
+                      <p style={{ color: '#666', margin: 0, fontSize: '12px' }}>Portions needed</p>
                     </Card>
                   </Col>
                 </Row>
