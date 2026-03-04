@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, message, Alert } from 'antd';
 import { HomeOutlined, CoffeeOutlined, TagsOutlined, UserOutlined, LogoutOutlined, DownloadOutlined } from '@ant-design/icons';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import TenantDashboard from './pages/TenantDashboard';
 import MealTracker from './pages/MealTracker';
 import ServiceRequests from './pages/ServiceRequests';
