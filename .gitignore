@@ -30,6 +30,8 @@ pgmt.db
 # IDE
 .vscode/
 .idea/
+.claude/
+.vite/
 *.swp
 *.swo
 *~
