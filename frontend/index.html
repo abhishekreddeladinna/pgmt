@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description" content="PGMT - PG Management Tool" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+    <!-- iOS PWA -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PGMT" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Splash screen color -->
+    <meta name="msapplication-TileColor" content="#667eea" />
+
+    <title>PGMT</title>
+
+    <style>
+      /* PWA splash / loading screen */
+      #pwa-splash {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        z-index: 9999; transition: opacity 0.3s;
+      }
+      #pwa-splash h1 { color: white; font-size: 48px; font-family: Arial, sans-serif; margin: 0; }
+      #pwa-splash p { color: rgba(255,255,255,0.8); font-size: 16px; font-family: Arial, sans-serif; }
+    </style>
+  </head>
+  <body>
+    <div id="pwa-splash">
+      <h1>PGMT</h1>
+      <p>Loading...</p>
+    </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+    <script>
+      // Hide splash screen when app loads
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var splash = document.getElementById('pwa-splash');
+          if (splash) { splash.style.opacity = '0'; setTimeout(function() { splash.remove(); }, 300); }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

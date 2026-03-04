@@ -1,0 +1,8 @@
+/* PGMT App Styles */
+.ant-layout {
+  min-height: 100vh;
+}
+
+.ant-menu-horizontal {
+  line-height: 56px;
+}
