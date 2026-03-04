@@ -36,11 +36,17 @@ function MealTracker({ user }: MealTrackerProps) {
   });
   const [deadlines, setDeadlines] = useState<DeadlineInfo[]>([]);
   const [loading, setLoading] = useState(false);
+  const [, setNowTick] = useState(Date.now());
   const API_URL = import.meta.env.VITE_API_URL || '';
 
   useEffect(() => {
     fetchTodaysMeals();
     fetchDeadlines();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNowTick(Date.now()), 30000);
+    return () => clearInterval(timer);
   }, []);
 
   const fetchDeadlines = async () => {
@@ -89,6 +95,11 @@ function MealTracker({ user }: MealTrackerProps) {
   };
 
   const handleMealChange = async (mealType: string, isEating: boolean) => {
+    if (isToggleDisabled(mealType)) {
+      message.error(`${mealType.toUpperCase()} deadline has passed`);
+      return;
+    }
+
     setLoading(true);
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
@@ -107,7 +118,11 @@ function MealTracker({ user }: MealTrackerProps) {
       });
       message.success(`${mealType.toUpperCase()} updated!`);
     } catch (error) {
-      message.error('Failed to update meal');
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        message.error(error.response.data?.detail || 'Deadline has passed');
+      } else {
+        message.error('Failed to update meal');
+      }
       console.error(error);
     } finally {
       setLoading(false);
@@ -115,6 +130,11 @@ function MealTracker({ user }: MealTrackerProps) {
   };
 
   const handleVegNonVegChange = async (mealType: string, value: string) => {
+    if (isToggleDisabled(mealType)) {
+      message.error(`${mealType.toUpperCase()} deadline has passed`);
+      return;
+    }
+
     const updated = {
       ...meals,
       [mealType]: { ...meals[mealType], veg_non_veg: value },
@@ -133,7 +153,11 @@ function MealTracker({ user }: MealTrackerProps) {
       });
       message.success(`${mealType.toUpperCase()} preference updated!`);
     } catch (error) {
-      message.error('Failed to update preference');
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        message.error(error.response.data?.detail || 'Deadline has passed');
+      } else {
+        message.error('Failed to update preference');
+      }
       console.error(error);
     }
   };
@@ -208,6 +232,7 @@ function MealTracker({ user }: MealTrackerProps) {
                     <Select
                       value={meals[type]?.veg_non_veg || 'veg'}
                       onChange={(value) => handleVegNonVegChange(type, value)}
+                      disabled={isToggleDisabled(type)}
                       options={[
                         { label: '🥬 Vegetarian', value: 'veg' },
                         { label: '🍗 Non-Vegetarian', value: 'non_veg' },

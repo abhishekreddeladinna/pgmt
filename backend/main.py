@@ -205,6 +205,17 @@ def get_db():
         db.close()
 
 
+def is_deadline_passed(db: Session, meal_type: str) -> bool:
+    deadline = db.query(Deadline).filter(Deadline.meal_type == meal_type).first()
+    if not deadline:
+        return False
+
+    now = datetime.now()
+    current_minutes = now.hour * 60 + now.minute
+    deadline_minutes = deadline.deadline_hour * 60 + deadline.deadline_minute
+    return current_minutes >= deadline_minutes
+
+
 # ---------------------------
 # Pydantic models
 # ---------------------------
@@ -342,6 +353,8 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/meals", response_model=MealResponse)
 def create_meal(meal: MealCreate, db: Session = Depends(get_db)):
+    if is_deadline_passed(db, meal.meal_type):
+        raise HTTPException(status_code=403, detail=f"{meal.meal_type.capitalize()} deadline has passed")
 
     existing = db.query(Meal).filter(
         Meal.user_id == meal.user_id,
@@ -424,12 +437,18 @@ def meal_summary(date: str, db: Session = Depends(get_db)):
 
     meals = db.query(Meal).filter(Meal.date == date).all()
 
+    breakfast = len([m for m in meals if m.is_eating and m.meal_type == "breakfast"])
+    lunch = len([m for m in meals if m.is_eating and m.meal_type == "lunch"])
+    dinner = len([m for m in meals if m.is_eating and m.meal_type == "dinner"])
     veg = len([m for m in meals if m.is_eating and m.veg_non_veg == "veg"])
     nonveg = len([m for m in meals if m.is_eating and m.veg_non_veg == "non_veg"])
     total = len([m for m in meals if m.is_eating])
 
     return {
         "total_eating": total,
+        "breakfast": breakfast,
+        "lunch": lunch,
+        "dinner": dinner,
         "veg": veg,
         "non_veg": nonveg
     }
