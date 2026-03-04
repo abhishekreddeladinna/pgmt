@@ -22,6 +22,9 @@ interface MealSummary {
   total_eating: number;
   veg: number;
   non_veg: number;
+  breakfast?: number;
+  lunch?: number;
+  dinner?: number;
 }
 
 interface ServiceRequest {
@@ -213,6 +216,36 @@ function AdminDashboard({ user }: AdminDashboardProps) {
               title="Total Eating Today"
               value={mealSummary?.total_eating || 0}
               prefix={<TeamOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={6}>
+          <Card>
+            <Statistic
+              title="Breakfast"
+              value={mealSummary?.breakfast || 0}
+              prefix={<CoffeeOutlined />}
+              valueStyle={{ color: '#faad14' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={6}>
+          <Card>
+            <Statistic
+              title="Lunch"
+              value={mealSummary?.lunch || 0}
+              prefix={<CoffeeOutlined />}
+              valueStyle={{ color: '#f5222d' }}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={6}>
+          <Card>
+            <Statistic
+              title="Dinner"
+              value={mealSummary?.dinner || 0}
+              prefix={<CoffeeOutlined />}
+              valueStyle={{ color: '#1890ff' }}
             />
           </Card>
         </Col>
