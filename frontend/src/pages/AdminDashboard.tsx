@@ -249,27 +249,52 @@ function AdminDashboard({ user }: AdminDashboardProps) {
             />
           </Card>
         </Col>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="Vegetarian"
-              value={mealSummary?.veg || 0}
-              prefix={<CoffeeOutlined />}
-              valueStyle={{ color: '#52c41a' }}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="Non-Vegetarian"
-              value={mealSummary?.non_veg || 0}
-              prefix={<CoffeeOutlined />}
-              valueStyle={{ color: '#f5222d' }}
-            />
-          </Card>
-        </Col>
       </Row>
+
+      <Card title="🍽️ Food Inventory Summary" style={{ marginBottom: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }} headStyle={{ color: 'white' }}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12}>
+            <Card
+              style={{
+                background: '#52c41a20',
+                border: '2px solid #52c41a',
+                borderRadius: '8px',
+                textAlign: 'center',
+                padding: '20px',
+              }}
+            >
+              <div style={{ fontSize: '32px', marginBottom: '10px' }}>🥬</div>
+              <h3 style={{ color: '#52c41a', marginBottom: '8px' }}>Vegetarian</h3>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#52c41a' }}>
+                {mealSummary?.veg || 0}
+              </div>
+              <p style={{ color: '#999', marginTop: '8px', marginBottom: 0, fontSize: '12px' }}>
+                People eating vegetarian today
+              </p>
+            </Card>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Card
+              style={{
+                background: '#f522200d',
+                border: '2px solid #f5222d',
+                borderRadius: '8px',
+                textAlign: 'center',
+                padding: '20px',
+              }}
+            >
+              <div style={{ fontSize: '32px', marginBottom: '10px' }}>🍗</div>
+              <h3 style={{ color: '#f5222d', marginBottom: '8px' }}>Non-Vegetarian</h3>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#f5222d' }}>
+                {mealSummary?.non_veg || 0}
+              </div>
+              <p style={{ color: '#999', marginTop: '8px', marginBottom: 0, fontSize: '12px' }}>
+                People eating non-vegetarian today
+              </p>
+            </Card>
+          </Col>
+        </Row>
+      </Card>
 
       <Tabs
         defaultActiveKey="1"
