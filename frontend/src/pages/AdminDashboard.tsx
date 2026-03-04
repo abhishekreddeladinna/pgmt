@@ -125,13 +125,31 @@ function AdminDashboard({ user }: AdminDashboardProps) {
   };
 
   const serviceColumns: TableColumnsType<ServiceRequest> = [
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 50 },
-    { title: 'Issue', dataIndex: 'issue', key: 'issue' },
-    { title: 'User ID', dataIndex: 'user_id', key: 'user_id' },
+    { 
+      title: 'ID', 
+      dataIndex: 'id', 
+      key: 'id', 
+      width: 50,
+      responsive: ['md'] as const,
+    },
+    { 
+      title: 'Issue', 
+      dataIndex: 'issue', 
+      key: 'issue',
+      width: '40%',
+    },
+    { 
+      title: 'User ID', 
+      dataIndex: 'user_id', 
+      key: 'user_id',
+      width: '20%',
+      responsive: ['sm'] as const,
+    },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
+      width: '20%',
       render: (status: string) => (
         <Tag
           icon={status === 'Fixed' ? <CheckCircleOutlined /> : <ClockCircleOutlined />}
@@ -145,11 +163,14 @@ function AdminDashboard({ user }: AdminDashboardProps) {
       title: 'Date',
       dataIndex: 'created_at',
       key: 'created_at',
+      width: '20%',
+      responsive: ['md'] as const,
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
       title: 'Action',
       key: 'action',
+      width: '20%',
       render: (_, record: ServiceRequest) => {
         if (record.status === 'Fixed') return <span>-</span>;
         return (
@@ -321,6 +342,8 @@ function AdminDashboard({ user }: AdminDashboardProps) {
                 columns={serviceColumns}
                 rowKey="id"
                 pagination={{ pageSize: 10 }}
+                scroll={{ x: 'max-content' }}
+                size="small"
               />
             ),
           },
