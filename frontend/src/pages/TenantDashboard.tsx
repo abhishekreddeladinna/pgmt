@@ -75,7 +75,7 @@ function TenantDashboard({ user }: TenantDashboardProps) {
           <Col xs={24} sm={12}>
             <Card
               hoverable
-              onClick={() => window.location.href = '/meals'}
+              onClick={() => window.location.href = '/#/meals'}
               style={{ cursor: 'pointer', textAlign: 'center', padding: '20px' }}
             >
               <CoffeeOutlined style={{ fontSize: '32px', color: '#1890ff' }} />
@@ -85,7 +85,7 @@ function TenantDashboard({ user }: TenantDashboardProps) {
           <Col xs={24} sm={12}>
             <Card
               hoverable
-              onClick={() => window.location.href = '/service-requests'}
+              onClick={() => window.location.href = '/#/service-requests'}
               style={{ cursor: 'pointer', textAlign: 'center', padding: '20px' }}
             >
               <UserOutlined style={{ fontSize: '32px', color: '#1890ff' }} />
