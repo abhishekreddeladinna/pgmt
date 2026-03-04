@@ -1,0 +1,131 @@
+.admin-dashboard {
+  --admin-bg-a: #fff8f1;
+  --admin-bg-b: #eef7ff;
+  --admin-border: #e7d9c6;
+  --admin-muted: #667085;
+  --admin-ink: #1f2937;
+  --admin-card-border: #e9edf3;
+  font-family: 'Poppins', 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+.admin-hero {
+  margin-bottom: 20px;
+  background: linear-gradient(118deg, var(--admin-bg-a) 0%, var(--admin-bg-b) 60%, #f7fbff 100%);
+  border: 1px solid var(--admin-border);
+  animation: adminFadeUp 320ms ease both;
+}
+
+.admin-hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.admin-hero-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-stat-row {
+  margin-bottom: 18px;
+}
+
+.admin-stat-card {
+  border: 1px solid var(--admin-card-border);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.admin-stat-card.veg {
+  background: #f5fff8;
+}
+
+.admin-stat-card.nonveg {
+  background: #fff8f3;
+}
+
+.admin-tabs .ant-tabs-nav {
+  margin-bottom: 12px;
+}
+
+.admin-tab-card {
+  border: 1px solid var(--admin-card-border);
+  border-radius: 12px;
+}
+
+.meal-breakdown-card {
+  border: 1px solid var(--admin-card-border);
+  height: 100%;
+}
+
+.meal-breakdown-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.meal-breakdown-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.meal-breakdown-values > div {
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fbfdff;
+}
+
+.deadline-setting-card {
+  border: 1px solid #edf1f6;
+}
+
+.meal-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+@keyframes adminFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-hero-content {
+    gap: 10px;
+  }
+
+  .admin-hero-chips {
+    width: 100%;
+  }
+
+  .meal-breakdown-values {
+    grid-template-columns: 1fr;
+  }
+}

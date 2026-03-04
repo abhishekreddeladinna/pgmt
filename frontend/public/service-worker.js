@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pgmt-v2';
+const CACHE_NAME = 'pg-buddy-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

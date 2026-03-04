@@ -1,6 +1,6 @@
 {
-  "short_name": "PGMT",
-  "name": "PGMT - PG Management Tool",
+  "short_name": "PG Buddy",
+  "name": "PG Buddy - PG Management Tool",
   "description": "Manage your PG meals, service requests, and more",
   "icons": [
     {

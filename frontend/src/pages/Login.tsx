@@ -44,7 +44,7 @@ function Login() {
       <Row justify="center" align="middle" style={{ minHeight: '100vh' }}>
         <Col xs={24} sm={20} md={12} lg={8}>
           <Card
-            title="PGMT Login"
+            title="PG Buddy Login"
             variant="borderless"
             style={{
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',

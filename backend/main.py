@@ -155,7 +155,7 @@ seed_admin()
 # ---------------------------
 
 app = FastAPI(
-    title="PGMT API",
+    title="PG Buddy API",
     version="1.0.0",
     docs_url="/docs" if os.getenv("ENV", "development") != "production" else None,
 )
@@ -353,23 +353,38 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/meals", response_model=MealResponse)
 def create_meal(meal: MealCreate, db: Session = Depends(get_db)):
-    if is_deadline_passed(db, meal.meal_type):
-        raise HTTPException(status_code=403, detail=f"{meal.meal_type.capitalize()} deadline has passed")
+    meal_type = (meal.meal_type or "").strip().lower()
+    veg_non_veg = (meal.veg_non_veg or "").strip().lower()
+
+    if meal_type not in {"breakfast", "lunch", "dinner"}:
+        raise HTTPException(status_code=400, detail="Invalid meal_type")
+
+    if veg_non_veg not in {"veg", "non_veg"}:
+        raise HTTPException(status_code=400, detail="Invalid veg_non_veg")
+
+    if is_deadline_passed(db, meal_type):
+        raise HTTPException(status_code=403, detail=f"{meal_type.capitalize()} deadline has passed")
 
     existing = db.query(Meal).filter(
         Meal.user_id == meal.user_id,
         Meal.date == meal.date,
-        Meal.meal_type == meal.meal_type
+        Meal.meal_type == meal_type
     ).first()
 
     if existing:
         existing.is_eating = meal.is_eating
-        existing.veg_non_veg = meal.veg_non_veg
+        existing.veg_non_veg = veg_non_veg
         db.commit()
         db.refresh(existing)
         return existing
 
-    new_meal = Meal(**meal.model_dump())
+    new_meal = Meal(
+        user_id=meal.user_id,
+        meal_type=meal_type,
+        date=meal.date,
+        is_eating=meal.is_eating,
+        veg_non_veg=veg_non_veg,
+    )
 
     db.add(new_meal)
     db.commit()
@@ -437,20 +452,45 @@ def meal_summary(date: str, db: Session = Depends(get_db)):
 
     meals = db.query(Meal).filter(Meal.date == date).all()
 
-    breakfast = len([m for m in meals if m.is_eating and m.meal_type == "breakfast"])
-    lunch = len([m for m in meals if m.is_eating and m.meal_type == "lunch"])
-    dinner = len([m for m in meals if m.is_eating and m.meal_type == "dinner"])
-    veg = len([m for m in meals if m.is_eating and m.veg_non_veg == "veg"])
-    nonveg = len([m for m in meals if m.is_eating and m.veg_non_veg == "non_veg"])
-    total = len([m for m in meals if m.is_eating])
+    meal_breakdown = {
+        "breakfast": {"total": 0, "veg": 0, "non_veg": 0},
+        "lunch": {"total": 0, "veg": 0, "non_veg": 0},
+        "dinner": {"total": 0, "veg": 0, "non_veg": 0},
+    }
+
+    total = 0
+    veg = 0
+    nonveg = 0
+
+    for meal in meals:
+        if not meal.is_eating:
+            continue
+
+        meal_type = (meal.meal_type or "").strip().lower()
+        pref = (meal.veg_non_veg or "").strip().lower()
+        total += 1
+
+        if meal_type in meal_breakdown:
+            meal_breakdown[meal_type]["total"] += 1
+
+            if pref == "veg":
+                meal_breakdown[meal_type]["veg"] += 1
+            elif pref == "non_veg":
+                meal_breakdown[meal_type]["non_veg"] += 1
+
+        if pref == "veg":
+            veg += 1
+        elif pref == "non_veg":
+            nonveg += 1
 
     return {
         "total_eating": total,
-        "breakfast": breakfast,
-        "lunch": lunch,
-        "dinner": dinner,
+        "breakfast": meal_breakdown["breakfast"]["total"],
+        "lunch": meal_breakdown["lunch"]["total"],
+        "dinner": meal_breakdown["dinner"]["total"],
         "veg": veg,
-        "non_veg": nonveg
+        "non_veg": nonveg,
+        "meal_breakdown": meal_breakdown,
     }
 
 

@@ -1,0 +1,170 @@
+.meal-tracker {
+  --meal-bg-a: #fff6ea;
+  --meal-bg-b: #edf9f6;
+  --meal-border: #eddcc2;
+  --meal-text: #1f2937;
+  --meal-muted: #6b7280;
+  --meal-card-border: #eceff3;
+  font-family: 'Poppins', 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+.meal-tracker-hero {
+  margin-bottom: 20px;
+  background: linear-gradient(120deg, var(--meal-bg-a) 0%, var(--meal-bg-b) 65%, #f4f8ff 100%);
+  border: 1px solid var(--meal-border);
+  animation: mealFadeUp 320ms ease both;
+}
+
+.meal-tracker-hero-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meal-tracker-eyebrow {
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: var(--meal-muted);
+}
+
+.meal-tracker-title {
+  margin: 0;
+  color: var(--meal-text);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.meal-tracker-subtitle {
+  margin: 8px 0 0;
+  color: var(--meal-muted);
+}
+
+.meal-tracker-hero-deadlines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 620px;
+}
+
+.meal-deadline-pill {
+  border-radius: 999px;
+  border: 1px solid #dbe4ef;
+  background: #f8fbff;
+  color: #1d4d8f;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.meal-deadline-pill.is-locked {
+  background: #fff1f0;
+  color: #cf1322;
+  border-color: #ffccc7;
+}
+
+.meal-main-card {
+  margin-bottom: 20px;
+  animation: mealFadeUp 360ms ease both;
+}
+
+.meal-option-card {
+  border: 1px solid var(--meal-card-border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meal-option-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(16, 24, 40, 0.08);
+}
+
+.meal-option-card.is-active {
+  background: #fbfdfd;
+}
+
+.meal-option-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.meal-option-header h3 {
+  margin: 0;
+  color: var(--meal-text);
+  font-size: 20px;
+}
+
+.meal-option-row {
+  margin-top: 14px;
+}
+
+.meal-row-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.meal-option-status {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.meal-deadline-guide {
+  animation: mealFadeUp 400ms ease both;
+}
+
+.meal-deadline-box {
+  border-left: 4px solid #0ea5a4;
+  border-radius: 10px;
+  border: 1px solid #edf2f7;
+  padding: 12px;
+  background: #fdfefe;
+  min-height: 110px;
+}
+
+.meal-deadline-time {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.meal-deadline-state {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.meal-deadline-state.is-open {
+  color: #166534;
+}
+
+.meal-deadline-state.is-closed {
+  color: #b42318;
+}
+
+@keyframes mealFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .meal-tracker-title {
+    font-size: 24px;
+  }
+}
+

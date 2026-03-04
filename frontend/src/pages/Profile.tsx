@@ -81,11 +81,11 @@ function Profile({ user }: ProfileProps) {
         title="App Information"
         style={{ marginTop: '20px' }}
       >
-        <p><strong>App Name:</strong> PGMT v1.0</p>
+        <p><strong>App Name:</strong> PG Buddy v1.0</p>
         <p><strong>Version:</strong> 1.0.0</p>
         <p><strong>Installed:</strong> Yes (PWA)</p>
         <p style={{ marginTop: '20px', fontSize: '12px', color: '#999' }}>
-          PGMT - PG Management Tool | Made for Bengaluru Hostels
+          PG Buddy - PG Management Tool | Made for Bengaluru Hostels
         </p>
       </Card>
     </div>

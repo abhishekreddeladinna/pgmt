@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Tag, Empty, Button } from 'antd';
-import { UserOutlined, CoffeeOutlined, AppstoreOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Card, Row, Col, Button } from 'antd';
+import { CoffeeOutlined, ToolOutlined, PhoneOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/TenantDashboard.css';
 
 interface User {
   id: number;
@@ -24,8 +26,19 @@ interface TenantDashboardProps {
   user: User;
 }
 
+type MealType = 'breakfast' | 'lunch' | 'dinner';
+
+const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
+
+const mealLabels: Record<MealType, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+};
+
 function TenantDashboard({ user }: TenantDashboardProps) {
   const [stats, setStats] = useState<Meal[] | null>(null);
+  const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL || '';
 
   useEffect(() => {
@@ -44,72 +57,77 @@ function TenantDashboard({ user }: TenantDashboardProps) {
     }
   };
 
-  return (
-    <div>
-      <Row gutter={16} style={{ marginBottom: '20px' }}>
-        <Col xs={24} sm={12}>
-          <Card>
-            <Statistic
-              title={`Hello, ${user.name}`}
-              value=""
-              prefix={<UserOutlined />}
-            />
-            <p style={{ color: '#999', marginTop: '10px' }}>
-              Phone: {user.phone}
-            </p>
-          </Card>
-        </Col>
-        <Col xs={24} sm={12}>
-          <Card>
-            <Statistic
-              title="Your Meals Today"
-              value={stats?.length || 0}
-              prefix={<CoffeeOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
+  const mealPreferenceMap = useMemo(() => {
+    const map: Record<MealType, boolean> = {
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+    };
 
-      <Card title="Quick Actions" style={{ marginBottom: '20px' }}>
+    (stats || []).forEach((meal) => {
+      const key = (meal.meal_type || '').toLowerCase() as MealType;
+      if (key in map) {
+        map[key] = Boolean(meal.is_eating);
+      }
+    });
+
+    return map;
+  }, [stats]);
+
+  return (
+    <div className="tenant-dashboard">
+      <Card className="tenant-hero-card" bordered={false}>
+        <div className="tenant-hero-content">
+          <div>
+            <p className="tenant-eyebrow">Resident Dashboard</p>
+            <h2 className="tenant-title">Hello, {user.name}</h2>
+            <p className="tenant-phone">
+              <PhoneOutlined /> {user.phone}
+            </p>
+          </div>
+          <div className="tenant-meal-status">
+            {mealTypes.map((mealType) => {
+              const opted = mealPreferenceMap[mealType];
+              return (
+                <span
+                  key={mealType}
+                  className={`tenant-status-pill ${opted ? 'is-opted' : 'is-not-opted'}`}
+                >
+                  {mealLabels[mealType]}: {opted ? 'Opted' : 'Not Opted'}
+                </span>
+              );
+            })}
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Quick Actions" className="tenant-section-card">
         <Row gutter={16}>
           <Col xs={24} sm={12}>
             <Card
+              className="tenant-action-card"
               hoverable
-              onClick={() => window.location.href = '/#/meals'}
-              style={{ cursor: 'pointer', textAlign: 'center', padding: '20px' }}
+              onClick={() => navigate('/meals')}
             >
-              <CoffeeOutlined style={{ fontSize: '32px', color: '#1890ff' }} />
-              <p style={{ marginTop: '10px', marginBottom: 0 }}>Update Meal Preferences</p>
+              <CoffeeOutlined className="tenant-action-icon" />
+              <h4 className="tenant-action-title">Update Meals</h4>
+              <p className="tenant-action-desc">Change breakfast, lunch, and dinner selections.</p>
+              <Button type="primary">Go to Meals</Button>
             </Card>
           </Col>
           <Col xs={24} sm={12}>
             <Card
+              className="tenant-action-card"
               hoverable
-              onClick={() => window.location.href = '/#/service-requests'}
-              style={{ cursor: 'pointer', textAlign: 'center', padding: '20px' }}
+              onClick={() => navigate('/service-requests')}
             >
-              <UserOutlined style={{ fontSize: '32px', color: '#1890ff' }} />
-              <p style={{ marginTop: '10px', marginBottom: 0 }}>Report Issues</p>
+              <ToolOutlined className="tenant-action-icon" />
+              <h4 className="tenant-action-title">Report Issues</h4>
+              <p className="tenant-action-desc">Create and track your service requests quickly.</p>
+              <Button>Open Requests</Button>
             </Card>
           </Col>
         </Row>
-      </Card>
-
-      <Card title="Today's Meal Preferences">
-        {stats && stats.length > 0 ? (
-          <div>
-            {stats.map((meal: Meal) => (
-              <div key={meal.id} style={{ padding: '10px', borderBottom: '1px solid #f0f0f0' }}>
-                <Tag color={meal.is_eating ? 'green' : 'red'}>
-                  {meal.meal_type.toUpperCase()}: {meal.is_eating ? 'YES' : 'NO'}
-                </Tag>
-                {meal.is_eating && <Tag color="blue">{meal.veg_non_veg.toUpperCase()}</Tag>}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <Empty description="No meals recorded yet" />
-        )}
       </Card>
     </div>
   );

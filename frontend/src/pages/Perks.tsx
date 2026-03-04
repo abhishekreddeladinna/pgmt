@@ -63,7 +63,7 @@ function Perks() {
         extra={<ShoppingOutlined />}
         style={{ marginBottom: '20px' }}
       >
-        <p>Exclusive deals for PGMT residents</p>
+        <p>Exclusive deals for PG Buddy residents</p>
       </Card>
 
       <Row gutter={[16, 16]}>

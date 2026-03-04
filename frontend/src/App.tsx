@@ -37,15 +37,47 @@ function AppContent() {
   const [showInstallBanner, setShowInstallBanner] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || '';
+  const currentPath = location.pathname || '/';
+  const isAuthRoute = currentPath === '/login' || currentPath === '/signup';
 
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    } else if (location.hash.slice(1) !== '/login' && location.hash.slice(1) !== '/signup') {
-      navigate('/login');
+
+    if (!savedUser) {
+      setUser((prev) => (prev === null ? prev : null));
+      if (!isAuthRoute) {
+        navigate('/login', { replace: true });
+      }
+      return;
     }
-  }, [navigate, location]);
+
+    try {
+      const parsedUser = JSON.parse(savedUser) as User;
+      setUser((prev) => {
+        if (
+          prev &&
+          prev.id === parsedUser.id &&
+          prev.phone === parsedUser.phone &&
+          prev.aadhar === parsedUser.aadhar &&
+          prev.name === parsedUser.name &&
+          prev.is_admin === parsedUser.is_admin
+        ) {
+          return prev;
+        }
+        return parsedUser;
+      });
+
+      if (isAuthRoute) {
+        navigate(parsedUser.is_admin ? '/admin' : '/home', { replace: true });
+      }
+    } catch {
+      localStorage.removeItem('user');
+      setUser((prev) => (prev === null ? prev : null));
+      if (!isAuthRoute) {
+        navigate('/login', { replace: true });
+      }
+    }
+  }, [navigate, currentPath, isAuthRoute]);
 
   // PWA install prompt
   useEffect(() => {
@@ -88,8 +120,7 @@ function AppContent() {
     navigate(key);
   };
 
-  const currentHash = location.hash.slice(1) || '/';
-  if (!user || currentHash === '/login' || currentHash === '/signup') {
+  if (!user || isAuthRoute) {
     return (
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -119,15 +150,15 @@ function AppContent() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ background: '#001529', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ color: 'white', fontSize: '20px', fontWeight: 'bold' }}>PGMT</div>
+        <div style={{ color: 'white', fontSize: '20px', fontWeight: 'bold' }}>PG Buddy</div>
         <Button type="primary" danger onClick={handleLogout} icon={<LogoutOutlined />}>
           Logout
         </Button>
       </Header>
       {showInstallBanner && (
         <Alert
-          message="Install PGMT App"
-          description="Add PGMT to your home screen for quick access and offline support."
+          message="Install PG Buddy App"
+          description="Add PG Buddy to your home screen for quick access and offline support."
           type="info"
           showIcon
           icon={<DownloadOutlined />}
@@ -171,7 +202,7 @@ function AppContent() {
       }}>
         <Menu
           mode="horizontal"
-          selectedKeys={[currentHash]}
+          selectedKeys={[currentPath]}
           onClick={(e) => handleMenuClick(e.key)}
           items={menuItems.map(item => ({
             key: item.key,

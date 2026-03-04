@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Switch, message, Select } from 'antd';
+import { Card, Row, Col, Switch, message, Select, Tag } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, StopOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import { format } from 'date-fns';
+import '../styles/MealTracker.css';
 
 interface User {
   id: number;
@@ -11,12 +13,14 @@ interface User {
   is_admin: boolean;
 }
 
-interface MealState {
-  [key: string]: {
-    is_eating: boolean;
-    veg_non_veg: string;
-  };
+type MealType = 'breakfast' | 'lunch' | 'dinner';
+
+interface MealPreference {
+  is_eating: boolean;
+  veg_non_veg: string;
 }
+
+type MealState = Record<MealType, MealPreference>;
 
 interface MealTrackerProps {
   user: User;
@@ -28,6 +32,26 @@ interface DeadlineInfo {
   deadline_minute: number;
 }
 
+const mealTypes: MealType[] = ['breakfast', 'lunch', 'dinner'];
+
+const mealLabels: Record<MealType, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+};
+
+const mealColors: Record<MealType, string> = {
+  breakfast: '#c77d1f',
+  lunch: '#c2410c',
+  dinner: '#0f766e',
+};
+
+const fallbackDeadlineLabels: Record<MealType, string> = {
+  breakfast: '9:00 AM',
+  lunch: '9:00 AM',
+  dinner: '7:00 PM',
+};
+
 function MealTracker({ user }: MealTrackerProps) {
   const [meals, setMeals] = useState<MealState>({
     breakfast: { is_eating: false, veg_non_veg: 'veg' },
@@ -35,7 +59,7 @@ function MealTracker({ user }: MealTrackerProps) {
     dinner: { is_eating: false, veg_non_veg: 'veg' },
   });
   const [deadlines, setDeadlines] = useState<DeadlineInfo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [savingMeal, setSavingMeal] = useState<MealType | null>(null);
   const [, setNowTick] = useState(Date.now());
   const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -65,18 +89,21 @@ function MealTracker({ user }: MealTrackerProps) {
       const userMeals = response.data.filter((m: any) => m.user_id === user.id);
 
       if (userMeals.length > 0) {
-        const mealMap: MealState = {};
+        const mealMap: Partial<MealState> = {};
         userMeals.forEach((m: any) => {
-          mealMap[m.meal_type] = { is_eating: m.is_eating, veg_non_veg: m.veg_non_veg };
+          const mealType = (m.meal_type || '').toLowerCase() as MealType;
+          if (mealTypes.includes(mealType)) {
+            mealMap[mealType] = { is_eating: Boolean(m.is_eating), veg_non_veg: m.veg_non_veg || 'veg' };
+          }
         });
-        setMeals({ ...meals, ...mealMap });
+        setMeals((prev) => ({ ...prev, ...mealMap }));
       }
     } catch (error) {
       console.error('Error fetching meals:', error);
     }
   };
 
-  const isToggleDisabled = (mealType: string): boolean => {
+  const isToggleDisabled = (mealType: MealType): boolean => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const dl = deadlines.find((d) => d.meal_type === mealType);
@@ -85,7 +112,7 @@ function MealTracker({ user }: MealTrackerProps) {
     return currentMinutes >= deadlineMinutes;
   };
 
-  const getDeadlineLabel = (mealType: string): string => {
+  const getDeadlineLabel = (mealType: MealType): string => {
     const dl = deadlines.find((d) => d.meal_type === mealType);
     if (!dl) return '';
     const h = dl.deadline_hour % 12 || 12;
@@ -94,29 +121,27 @@ function MealTracker({ user }: MealTrackerProps) {
     return `${h}:${m} ${ampm}`;
   };
 
-  const handleMealChange = async (mealType: string, isEating: boolean) => {
+  const handleMealChange = async (mealType: MealType, isEating: boolean) => {
     if (isToggleDisabled(mealType)) {
-      message.error(`${mealType.toUpperCase()} deadline has passed`);
+      message.error(`${mealLabels[mealType]} deadline has passed`);
       return;
     }
 
-    setLoading(true);
+    setSavingMeal(mealType);
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
-      const mealData = {
+      await axios.post(`${API_URL}/api/meals`, {
         user_id: user.id,
         meal_type: mealType,
         date: today,
         is_eating: isEating,
         veg_non_veg: meals[mealType]?.veg_non_veg || 'veg',
-      };
-
-      await axios.post(`${API_URL}/api/meals`, mealData);
-      setMeals({
-        ...meals,
-        [mealType]: { ...meals[mealType], is_eating: isEating },
       });
-      message.success(`${mealType.toUpperCase()} updated!`);
+      setMeals((prev) => ({
+        ...prev,
+        [mealType]: { ...prev[mealType], is_eating: isEating },
+      }));
+      message.success(`${mealLabels[mealType]} updated`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         message.error(error.response.data?.detail || 'Deadline has passed');
@@ -125,13 +150,13 @@ function MealTracker({ user }: MealTrackerProps) {
       }
       console.error(error);
     } finally {
-      setLoading(false);
+      setSavingMeal(null);
     }
   };
 
-  const handleVegNonVegChange = async (mealType: string, value: string) => {
+  const handleVegNonVegChange = async (mealType: MealType, value: string) => {
     if (isToggleDisabled(mealType)) {
-      message.error(`${mealType.toUpperCase()} deadline has passed`);
+      message.error(`${mealLabels[mealType]} deadline has passed`);
       return;
     }
 
@@ -140,8 +165,8 @@ function MealTracker({ user }: MealTrackerProps) {
       [mealType]: { ...meals[mealType], veg_non_veg: value },
     };
     setMeals(updated);
+    setSavingMeal(mealType);
 
-    // Save to backend immediately
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
       await axios.post(`${API_URL}/api/meals`, {
@@ -151,7 +176,7 @@ function MealTracker({ user }: MealTrackerProps) {
         is_eating: updated[mealType].is_eating,
         veg_non_veg: value,
       });
-      message.success(`${mealType.toUpperCase()} preference updated!`);
+      message.success(`${mealLabels[mealType]} preference updated`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         message.error(error.response.data?.detail || 'Deadline has passed');
@@ -159,119 +184,84 @@ function MealTracker({ user }: MealTrackerProps) {
         message.error('Failed to update preference');
       }
       console.error(error);
+    } finally {
+      setSavingMeal(null);
     }
   };
 
-  const mealTypes = ['breakfast', 'lunch', 'dinner'];
-  const mealIcons: { [key: string]: string } = {
-    breakfast: '☀️',
-    lunch: '🍽️',
-    dinner: '🌙',
-  };
-  
-  const mealColors: { [key: string]: string } = {
-    breakfast: '#faad14', // Yellow
-    lunch: '#f5222d',     // Red
-    dinner: '#1890ff',    // Blue
-  };
-
   return (
-    <div>
-      <Card title="Today's Meal Preferences" style={{ marginBottom: '20px' }}>
+    <div className="meal-tracker">
+      <Card className="meal-tracker-hero" bordered={false}>
+        <div className="meal-tracker-hero-inner">
+          <div>
+            <h2 className="meal-tracker-title">Deadline for today</h2>
+            <p className="meal-tracker-subtitle">Update your choices before each deadline.</p>
+          </div>
+          <div className="meal-tracker-hero-deadlines">
+            {mealTypes.map((type) => (
+              <span key={type} className={`meal-deadline-pill ${isToggleDisabled(type) ? 'is-locked' : ''}`}>
+                {mealLabels[type]}: {getDeadlineLabel(type) || fallbackDeadlineLabels[type]}
+              </span>
+            ))}
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Meal Selection" className="meal-main-card">
         <Row gutter={[16, 16]}>
           {mealTypes.map((type) => (
             <Col xs={24} sm={12} md={8} key={type}>
               <Card
-                style={{
-                  background: meals[type]?.is_eating 
-                    ? `${mealColors[type]}15` 
-                    : '#fafafa',
-                  border: `2px solid ${mealColors[type]}`,
-                  borderRadius: '8px',
-                  transition: 'all 0.3s ease',
-                }}
+                className={`meal-option-card ${meals[type]?.is_eating ? 'is-active' : ''}`}
+                style={{ borderTop: `4px solid ${mealColors[type]}` }}
                 hoverable
               >
-                <div style={{ fontSize: '36px', marginBottom: '10px', textAlign: 'center' }}>
-                  {mealIcons[type]}
+                <div className="meal-option-header">
+                  <h3>{mealLabels[type]}</h3>
+                  <Tag icon={<ClockCircleOutlined />} color={isToggleDisabled(type) ? 'red' : 'processing'}>
+                    {isToggleDisabled(type) ? 'Locked' : getDeadlineLabel(type) || fallbackDeadlineLabels[type]}
+                  </Tag>
                 </div>
-                <h3 style={{ 
-                  marginBottom: '15px', 
-                  textTransform: 'capitalize',
-                  textAlign: 'center',
-                  color: mealColors[type],
-                  fontWeight: 'bold'
-                }}>
-                  {type}
-                </h3>
 
-                <div style={{ marginBottom: '15px' }}>
-                  <label style={{ fontWeight: 'bold' }}>Eating: </label>
+                <div className="meal-option-row">
+                  <span className="meal-row-label">I am eating</span>
                   <Switch
                     checked={meals[type]?.is_eating || false}
                     onChange={(checked) => handleMealChange(type, checked)}
                     disabled={isToggleDisabled(type)}
-                    loading={loading}
-                    style={{ marginLeft: '8px' }}
+                    loading={savingMeal === type}
                   />
-                  {isToggleDisabled(type) && (
-                    <span style={{ color: '#f5222d', fontSize: '12px', marginLeft: '10px', display: 'block', marginTop: '4px' }}>
-                      ⏱️ Deadline passed
-                    </span>
-                  )}
                 </div>
 
-                {meals[type]?.is_eating && (
-                  <div style={{ 
-                    backgroundColor: 'rgba(255,255,255,0.5)', 
-                    padding: '10px',
-                    borderRadius: '4px',
-                    marginTop: '10px'
-                  }}>
-                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Type: </label>
-                    <Select
-                      value={meals[type]?.veg_non_veg || 'veg'}
-                      onChange={(value) => handleVegNonVegChange(type, value)}
-                      disabled={isToggleDisabled(type)}
-                      options={[
-                        { label: '🥬 Vegetarian', value: 'veg' },
-                        { label: '🍗 Non-Vegetarian', value: 'non_veg' },
-                      ]}
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                )}
+                <div className="meal-option-status">
+                  <Tag
+                    icon={meals[type]?.is_eating ? <CheckCircleOutlined /> : <StopOutlined />}
+                    color={meals[type]?.is_eating ? 'green' : 'default'}
+                  >
+                    {meals[type]?.is_eating ? 'Opted In' : 'Not Opted'}
+                  </Tag>
+                  {isToggleDisabled(type) && <Tag color="red">Deadline Passed</Tag>}
+                </div>
+
+                <div className="meal-option-row">
+                  <span className="meal-row-label">Food Type</span>
+                  <Select
+                    value={meals[type]?.veg_non_veg || 'veg'}
+                    onChange={(value) => handleVegNonVegChange(type, value)}
+                    disabled={!meals[type]?.is_eating || isToggleDisabled(type)}
+                    options={[
+                      { label: 'Vegetarian', value: 'veg' },
+                      { label: 'Non-Vegetarian', value: 'non_veg' },
+                    ]}
+                    style={{ width: '100%' }}
+                  />
+                </div>
               </Card>
             </Col>
           ))}
         </Row>
       </Card>
 
-      <Card title="⏰ Meal Deadlines" style={{ marginTop: '20px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }} headStyle={{ color: 'white' }}>
-        <Row gutter={[16, 16]}>
-          {mealTypes.map((type) => (
-            <Col xs={24} sm={12} md={8} key={type}>
-              <div style={{
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                padding: '12px',
-                borderRadius: '6px',
-                textAlign: 'center',
-                backdropFilter: 'blur(10px)'
-              }}>
-                <div style={{ fontSize: '24px', marginBottom: '8px' }}>
-                  {mealIcons[type]}
-                </div>
-                <strong style={{ display: 'block', textTransform: 'capitalize', marginBottom: '4px' }}>
-                  {type}
-                </strong>
-                <div style={{ fontSize: '14px' }}>
-                  Until {getDeadlineLabel(type) || (type === 'breakfast' ? '9:00 AM' : type === 'lunch' ? '9:00 AM' : '7:00 PM')}
-                </div>
-              </div>
-            </Col>
-          ))}
-        </Row>
-      </Card>
     </div>
   );
 }

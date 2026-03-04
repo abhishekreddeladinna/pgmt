@@ -1,0 +1,178 @@
+.tenant-dashboard {
+  --tenant-bg-a: #fff8ee;
+  --tenant-bg-b: #eefaf6;
+  --tenant-border: #f1e4ce;
+  --tenant-ink: #1f2937;
+  --tenant-muted: #6b7280;
+  --tenant-opted-bg: #e8f8ee;
+  --tenant-opted-text: #0f7a46;
+  --tenant-not-bg: #fff1f0;
+  --tenant-not-text: #cf1322;
+  font-family: 'Poppins', 'Nunito Sans', 'Segoe UI', sans-serif;
+}
+
+.tenant-hero-card {
+  margin-bottom: 20px;
+  background: linear-gradient(120deg, var(--tenant-bg-a) 0%, var(--tenant-bg-b) 55%, #f6fbff 100%);
+  border: 1px solid var(--tenant-border);
+  overflow: hidden;
+  animation: tenantFadeUp 320ms ease both;
+}
+
+.tenant-hero-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tenant-eyebrow {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tenant-muted);
+}
+
+.tenant-title {
+  margin: 0;
+  color: var(--tenant-ink);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.tenant-phone {
+  margin: 8px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tenant-muted);
+  font-weight: 500;
+}
+
+.tenant-meal-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.tenant-status-pill {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.tenant-status-pill.is-opted {
+  background: var(--tenant-opted-bg);
+  color: var(--tenant-opted-text);
+  border-color: #b7ebc6;
+}
+
+.tenant-status-pill.is-not-opted {
+  background: var(--tenant-not-bg);
+  color: var(--tenant-not-text);
+  border-color: #ffccc7;
+}
+
+.tenant-section-card {
+  margin-bottom: 20px;
+  animation: tenantFadeUp 360ms ease both;
+}
+
+.tenant-action-card {
+  border: 1px solid #eceef2;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.tenant-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.08);
+}
+
+.tenant-action-card .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tenant-action-icon {
+  font-size: 30px;
+  color: #0f766e;
+}
+
+.tenant-action-title {
+  margin: 0;
+  color: var(--tenant-ink);
+  font-size: 18px;
+}
+
+.tenant-action-desc {
+  margin: 0 0 8px;
+  color: var(--tenant-muted);
+}
+
+.tenant-action-card .ant-btn {
+  width: fit-content;
+}
+
+.tenant-preference-list {
+  display: grid;
+  gap: 10px;
+}
+
+.tenant-preference-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #eef0f3;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fcfdff;
+}
+
+.tenant-preference-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tenant-ink);
+  font-weight: 600;
+}
+
+.tenant-preference-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@keyframes tenantFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 576px) {
+  .tenant-title {
+    font-size: 24px;
+  }
+
+  .tenant-meal-status {
+    width: 100%;
+  }
+
+  .tenant-preference-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
