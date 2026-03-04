@@ -3,5 +3,11 @@
   "outputDirectory": "build",
   "env": {
     "VITE_API_URL": "https://pgmt-api.onrender.com"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
